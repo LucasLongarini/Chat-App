@@ -16,14 +16,14 @@ module.exports = (dependencies) => {
             // Check if account already exists
             const user = await UserRepository.getByEmail(email);
             if (user)
-                return next(createError(404, "This email already exists"))
+                return next(createError(404, "This email already exists"));
 
             const hashedPass = await AuthService.hashPlainPassword(password);
             const newUser = await UserRepository.create(new User(undefined, username, email, hashedPass));
             const token = await AuthService.generateToken(newUser);
             res.cookie('authToken', token, { httpOnly: true });
-
-            return res.status(201).json({ User: newUser });
+            delete newUser['password']; // remove password before sending
+            return res.status(201).json({ user: newUser });
         }
         catch (err) {
             next(createError(500, err.args));
@@ -37,7 +37,7 @@ module.exports = (dependencies) => {
 
             const user = await UserRepository.getByEmail(email);
             if (!user || !user?.password)
-                return next(createError(404, "This email does not exist"))
+                return next(createError(404, "This email does not exist"));
             
             const correctPassword = await AuthService.verifyPassword(password, user.password);
 
@@ -46,7 +46,8 @@ module.exports = (dependencies) => {
             
             const token = await AuthService.generateToken(user);
             res.cookie('authToken', token, { httpOnly: true });
-            return res.status(200).json({ User: user });
+            delete user['password']; // remove password before sending
+            return res.status(200).json({ user: user });
         }
         catch (err) {
             next(createError(500, err.args));
