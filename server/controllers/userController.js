@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const createError = require("http-errors");
 
 // Dependency injection so we can inject different services for things like testing
 module.exports = (dependencies) => {
@@ -6,43 +7,54 @@ module.exports = (dependencies) => {
     const UserRepository = dependencies.UserRepository;
     const AuthService = dependencies.AuthService;
 
-    const signup = async (req, res, next) => {
+    const register = async (req, res, next) => {
         try {
-            const hashedPass = await AuthService.hashPlainPassword("pass123");
-            const newUser = await UserRepository.create(new User(undefined, "username", "bob@email.com", hashedPass));
+            const username = req.body.username;
+            const email = req.body.email;
+            const password = req.body.password;
+
+            // Check if account already exists
+            const user = await UserRepository.getByEmail(email);
+            if (user)
+                return next(createError(404, "This email already exists"))
+
+            const hashedPass = await AuthService.hashPlainPassword(password);
+            const newUser = await UserRepository.create(new User(undefined, username, email, hashedPass));
             const token = await AuthService.generateToken(newUser);
             res.cookie('authToken', token, { httpOnly: true });
 
             return res.status(201).json({ User: newUser });
         }
         catch (err) {
-            next(err.args);
+            next(createError(500, err.args));
         }
     }
 
     const login = async (req, res, next) => {
         try {
-            const user = await UserRepository.getByEmail("bob@email.com");
-            console.log(user);
+            const email = req.body.email;
+            const password = req.body.password;
+
+            const user = await UserRepository.getByEmail(email);
             if (!user || !user?.password)
-                return res.sendStatus(404);
+                return next(createError(404, "This email does not exist"))
             
-            const correctPassword = await AuthService.verifyPassword("pass123", user.password);
+            const correctPassword = await AuthService.verifyPassword(password, user.password);
 
             if (!correctPassword)
-                return res.sendStatus(401);
+                return next(createError(401, "Incorrect password"));
             
             const token = await AuthService.generateToken(user);
             res.cookie('authToken', token, { httpOnly: true });
             return res.status(200).json({ User: user });
         }
         catch (err) {
-            next(err.args);
+            next(createError(500, err.args));
         }
     }
 
     return {
-        signup,
+        register,
         login,
     }
 }
