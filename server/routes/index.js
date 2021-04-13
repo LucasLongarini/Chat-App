@@ -1,8 +1,13 @@
 const express = require("express");
-const router = express.Router();
+const userRoute = require("./userRoute");
 
-router.get("/welcome", function (req, res, next) {
-  res.status(200).send({ welcomeMessage: "Welcome!" });
-});
+const indexRouter = (dependencies) => {
+  const router = express.Router();
+  
+  router.use("/user", userRoute(dependencies));
+  
+  return router;
+};
 
-module.exports = router;
+module.exports = indexRouter;
+
