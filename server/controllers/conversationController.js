@@ -12,20 +12,20 @@ module.exports = (dependencies) => {
     // get all conversations for a user
     const getAll = async (req, res, next) => {
         try {
-            const userId = req.authData?.user?.id;
+            const userId = req.authData.user.id;
             const conversations = await ConversationRepository.getAllConversations(userId);
 
             // clean up json
             let cleanedConversations = conversations?.map((conversation) => {
                 let user = conversation.users.find(i => i.id !== userId);
                 delete user.password;
-                return  {
+                return {
                     id: conversation.id,
-                    latestMessage: conversation.messages.find(_ => true),
+                    latestMessage: conversation.messages[0],
                     user: user,
                 }
             });
-            res.status(200).json(cleanedConversations);
+            res.status(200).json({ conversations: cleanedConversations });
         }
         catch (err) {
             next(createError(500, err));
@@ -38,15 +38,15 @@ module.exports = (dependencies) => {
             const conversationId = req.params.id;
             const userId = req.authData?.user?.id;
             const conversation = await ConversationRepository.findById(conversationId);
-            
+
             // not found
             if (!conversation)
                 return next(createError(404));
-            
+
             // this user does not belong to the conversation
             if (!conversation.users.find(i => i.id === userId))
                 return next(createError(401));
-            
+
             const messages = conversation.messages?.map((message) => {
                 return {
                     id: message.id,
@@ -56,7 +56,7 @@ module.exports = (dependencies) => {
                 }
             });
 
-            res.status(200).json(messages);
+            res.status(200).json({ messages: messages });
         }
         catch (err) {
             console.log(err);
@@ -76,7 +76,7 @@ module.exports = (dependencies) => {
             // validate user exists
             if (!await UserRepository.findById(requestedUser))
                 return next(createError(404));
-            
+
             //check if conversation already exists
             const exists = await ConversationRepository.conversationExists(creatingUser, requestedUser);
             if (exists)
@@ -87,7 +87,7 @@ module.exports = (dependencies) => {
 
             if (!savedConversation)
                 return res.sendStatus(500);
-            
+
             // for testing - add a new message
             // await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, requestedUser, creatingUser, "Hello World"));
             // await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, creatingUser, requestedUser, "Hey whats up"));
