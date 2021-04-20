@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: 26,
     paddingBottom: 20,
     color: "#000000",
-    fontWeight: 500
+    fontWeight: 700
   },
   heroText: {
     fontSize: 26,
