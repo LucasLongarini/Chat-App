@@ -19,7 +19,7 @@ module.exports = class ConversationRepository extends BaseRepository {
                 { 'messages': { '$slice': -1 } } // only take most recent message (we don't want to send them all)
             ).populate('users');
 
-            if (!results || results?.length === 0) return undefined
+            if (!results) return []
 
             return results.map((schema) => this.fromSchema(schema));
 

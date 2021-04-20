@@ -22,7 +22,6 @@ module.exports = (dependencies) => {
             const newUser = await UserRepository.create(new User(undefined, username, email, hashedPass));
             const token = await AuthService.generateToken(newUser);
             res.cookie('authToken', token, { httpOnly: true });
-            delete newUser['password']; // remove password before sending
             return res.status(201).json({ user: newUser });
         }
         catch (err) {
@@ -35,7 +34,7 @@ module.exports = (dependencies) => {
             const email = req.body.email;
             const password = req.body.password;
 
-            const user = await UserRepository.getByEmail(email);
+            const user = await UserRepository.getByEmail(email, true);
             if (!user || !user?.password)
                 return next(createError(404, "This email does not exist"));
 
@@ -46,7 +45,7 @@ module.exports = (dependencies) => {
 
             const token = await AuthService.generateToken(user);
             res.cookie('authToken', token, { httpOnly: true });
-            delete user['password']; // remove password before sending
+            user.password = undefined; // remove password before sending
             return res.status(200).json({ user: user });
         }
         catch (err) {

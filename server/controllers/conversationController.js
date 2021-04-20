@@ -14,15 +14,14 @@ module.exports = (dependencies) => {
         try {
             const userId = req.authData.user.id;
             const conversations = await ConversationRepository.getAllConversations(userId);
+            console.log(conversations);
 
             // clean up json
             let cleanedConversations = conversations?.map((conversation) => {
-                let user = conversation.users.find(i => i.id !== userId);
-                delete user.password;
                 return {
                     id: conversation.id,
                     latestMessage: conversation.messages[0],
-                    user: user,
+                    users: conversation.users.filter(i => i.id !== userId) //send a list of users that aren't yourself,
                 }
             });
             res.status(200).json({ conversations: cleanedConversations });
@@ -52,7 +51,7 @@ module.exports = (dependencies) => {
                     id: message.id,
                     content: message.content,
                     sent: message.sent,
-                    didSend: message.fromUserId.toString() === userId
+                    fromUserId: message.fromUserId
                 }
             });
 

@@ -9,14 +9,14 @@ module.exports = class UserRepository extends BaseRepository {
         super(UserSchema);
     }
 
-    async getByEmail(email) {
+    async getByEmail(email, includePassword=false) {
         try {
             let user = await UserSchema.findOne({ email: email });
 
             if (user === null) return undefined;
 
             else {
-                return this.fromSchema(user);
+                return this.fromSchema(user, includePassword);
             }
         }
         catch (err) {
@@ -29,14 +29,10 @@ module.exports = class UserRepository extends BaseRepository {
         try {
             let users = await UserSchema.find({ username: { "$regex": username, "$options": "i" } });
 
-            if (users === null || users?.length === 0) return undefined;
+            if (users === null) return [];
 
             else {
-                return users.map((user) => {
-                    let userModel = this.fromSchema(user);
-                    delete userModel['password'];
-                    return userModel;
-                });
+                return users.map((user) => this.fromSchema(user));
             }
         }
         catch (err) {
@@ -55,8 +51,8 @@ module.exports = class UserRepository extends BaseRepository {
         return userSchema;
     }
 
-    fromSchema(schema) {
-        return new User(schema.id.toString(), schema.username, schema.email.toLowerCase(), schema.password);
+    fromSchema(schema, includePassword = false) {
+        return new User(schema.id.toString(), schema.username, schema.email.toLowerCase(), includePassword ? schema.password : undefined);
     }
 
 }
