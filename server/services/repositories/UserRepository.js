@@ -9,7 +9,7 @@ module.exports = class UserRepository extends BaseRepository {
         super(UserSchema);
     }
 
-    async getByEmail(email, includePassword=false) {
+    async getByEmail(email, includePassword = false) {
         try {
             let user = await UserSchema.findOne({ email: email });
 
@@ -34,6 +34,18 @@ module.exports = class UserRepository extends BaseRepository {
             else {
                 return users.map((user) => this.fromSchema(user));
             }
+        }
+        catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
+    async usersExist(userIds) {
+        try {
+            const results = await UserSchema.find({
+                '_id': { $in: userIds?.map(id => mongoose.Types.ObjectId(id)) }
+            });
+            return results.length === userIds.length;
         }
         catch (err) {
             return Promise.reject(err);

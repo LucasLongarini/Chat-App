@@ -1,6 +1,6 @@
 const express = require("express");
 const ConversationController = require('../controllers/conversationController');
-const { param, query } = require('express-validator');
+const { param, body } = require('express-validator');
 const sanitize = require('./middleware/sanitize');
 const authenticate = require('./middleware/authenticate');
 
@@ -18,7 +18,7 @@ const conversationRouter = (dependencies) => {
         controller.getMessages);
 
     router.post("/", [
-        query('userId').trim().notEmpty(),
+        body('userIds').isArray().notEmpty(),
     ], sanitize, authenticate,
         controller.create);
 

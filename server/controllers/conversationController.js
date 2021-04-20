@@ -66,22 +66,22 @@ module.exports = (dependencies) => {
     const create = async (req, res, next) => {
         try {
             let creatingUser = req.authData.user.id;
-            let requestedUser = req.query.userId;
+            let userIds = req.body.userIds;
 
             // can't create a conversation with yourself
-            if (creatingUser === requestedUser)
-                return next(createError(400));
+            if (userIds.includes(creatingUser))
+                return next(createError(400, "Can't create a conversation with yourself"));
 
-            // validate user exists
-            if (!await UserRepository.findById(requestedUser))
-                return next(createError(404));
+            // validate users exists
+            if (!await UserRepository.usersExist([...userIds]))
+                return next(createError(404, "Some users don't exist"));
 
             //check if conversation already exists
-            const exists = await ConversationRepository.conversationExists(creatingUser, requestedUser);
+            const exists = await ConversationRepository.conversationExists([creatingUser, ...userIds]);
             if (exists)
                 return next(createError(409, "Conversation already exists"));
 
-            const newConversation = new Conversation(undefined, undefined, [creatingUser, requestedUser]);
+            const newConversation = new Conversation(undefined, undefined, [creatingUser, ...userIds]);
             const savedConversation = await ConversationRepository.create(newConversation);
 
             if (!savedConversation)
@@ -92,7 +92,7 @@ module.exports = (dependencies) => {
             // await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, creatingUser, requestedUser, "Hey whats up"));
             // await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, requestedUser, creatingUser, "Not much, you?"));
 
-            return res.status(201).json(savedConversation);
+            return res.status(201).json({ conversation: savedConversation });
         }
         catch (err) {
             console.log(err);

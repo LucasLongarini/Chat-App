@@ -43,10 +43,10 @@ module.exports = class ConversationRepository extends BaseRepository {
         }
     }
 
-    async conversationExists(userId1, userId2) {
+    async conversationExists(userIds) {
         try {
             const results = await ConversationSchema.findOne(
-                { users: [mongoose.Types.ObjectId(userId1), mongoose.Types.ObjectId(userId2)] },
+                { users: userIds?.map(id => mongoose.Types.ObjectId(id)) },
             );
 
             return results || false;
