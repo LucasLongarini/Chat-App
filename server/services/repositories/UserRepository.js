@@ -29,7 +29,7 @@ module.exports = class UserRepository extends BaseRepository {
         try {
             let users = await UserSchema.find({ username: { "$regex": username, "$options": "i" } });
 
-            if (users === null) return [];
+            if (!users) return [];
 
             else {
                 return users.map((user) => this.fromSchema(user));

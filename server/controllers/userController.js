@@ -59,10 +59,7 @@ module.exports = (dependencies) => {
 
             const users = await UserRepository.getByUsername(username);
 
-            if (users)
-                return res.status(200).json(users);
-            else
-                next(createError(404));
+            return res.status(200).json({ users: users });
         }
         catch (err) {
             next(createError(500, err.args));
