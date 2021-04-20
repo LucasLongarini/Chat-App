@@ -14,14 +14,13 @@ module.exports = (dependencies) => {
         try {
             const userId = req.authData.user.id;
             const conversations = await ConversationRepository.getAllConversations(userId);
-            console.log(conversations);
 
             // clean up json
             let cleanedConversations = conversations?.map((conversation) => {
                 return {
                     id: conversation.id,
                     latestMessage: conversation.messages[0],
-                    users: conversation.users.filter(i => i.id !== userId) //send a list of users that aren't yourself,
+                    users: conversation.users
                 }
             });
             res.status(200).json({ conversations: cleanedConversations });
@@ -44,21 +43,11 @@ module.exports = (dependencies) => {
 
             // this user does not belong to the conversation
             if (!conversation.users.find(i => i.id === userId))
-                return next(createError(401));
+                return next(createError(401, "You do not belong to the conversation"));
 
-            const messages = conversation.messages?.map((message) => {
-                return {
-                    id: message.id,
-                    content: message.content,
-                    sent: message.sent,
-                    fromUserId: message.fromUserId
-                }
-            });
-
-            res.status(200).json({ messages: messages });
+            res.status(200).json({ messages: conversation.messages ?? [] });
         }
         catch (err) {
-            console.log(err);
             next(createError(500, err));
         }
     }
@@ -88,9 +77,9 @@ module.exports = (dependencies) => {
                 return res.sendStatus(500);
 
             // for testing - add a new message
-            // await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, requestedUser, creatingUser, "Hello World"));
-            // await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, creatingUser, requestedUser, "Hey whats up"));
-            // await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, requestedUser, creatingUser, "Not much, you?"));
+            await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, creatingUser, "Hello"));
+            await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, userIds[0], "Hey whats up"));
+            await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, creatingUser, "Not much, you?"));
 
             return res.status(201).json({ conversation: savedConversation });
         }

@@ -12,14 +12,13 @@ module.exports = class MessageRepository extends BaseRepository {
     toSchema(model) {
         return new MessageSchema({
             _id: model.id ? mongoose.Types.ObjectId(model.id) : undefined,
-            toUserId: model.toUserId ? mongoose.Types.ObjectId(model.toUserId) : undefined,
             fromUserId: model.fromUserId ? mongoose.Types.ObjectId(model.fromUserId) : undefined,
             content: model.content
         });
     }
 
     fromSchema(schema) {
-        return new Message(schema.id.toString(), schema.toUserId, schema.fromUserId, schema.content, schema.sent);
+        return new Message(schema.id.toString(), schema.fromUserId, schema.content, schema.sent);
     }
 
 }
