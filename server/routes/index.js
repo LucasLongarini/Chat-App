@@ -1,12 +1,14 @@
 const express = require("express");
-const userRoute = require("./userRoute");
-const conversationRoute = require('./conversationRoute');
+const authenticateRoute = require("./authenticateRoute");
+const conversationsRoute = require('./conversationsRoute');
+const usersRoute = require('./usersRoute');
 
 const indexRouter = (dependencies) => {
   const router = express.Router();
   
-  router.use("/user", userRoute(dependencies));
-  router.use("/conversation", conversationRoute(dependencies));
+  router.use("/authenticate", authenticateRoute(dependencies));
+  router.use("/conversations", conversationsRoute(dependencies));
+  router.use("/users", usersRoute(dependencies));
   return router;
   
 };

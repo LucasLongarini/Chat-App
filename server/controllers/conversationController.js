@@ -1,5 +1,4 @@
 const Conversation = require('../models/conversation');
-const Message = require('../models/message');
 const createError = require("http-errors");
 
 // Dependency injection so we can inject different services for things like testing
@@ -75,11 +74,6 @@ module.exports = (dependencies) => {
 
             if (!savedConversation)
                 return res.sendStatus(500);
-
-            // for testing - add a new message
-            await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, creatingUser, "Hello"));
-            await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, userIds[0], "Hey whats up"));
-            await ConversationRepository.addMessage(savedConversation.id, new Message(undefined, creatingUser, "Not much, you?"));
 
             return res.status(201).json({ conversation: savedConversation });
         }

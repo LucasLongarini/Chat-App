@@ -1,13 +1,12 @@
 const express = require("express");
-const UserController = require('../controllers/userController');
-const { check, query } = require('express-validator');
+const authenticateController = require('../controllers/authenticateController');
+const { check } = require('express-validator');
 const sanitize = require('./middleware/sanitize');
-const authenticate = require('./middleware/authenticate');
 
-const userRouter = (dependencies) => {
+const authenticationRouter = (dependencies) => {
     const router = express.Router();
 
-    const controller = UserController(dependencies);
+    const controller = authenticateController(dependencies);
 
     router.post("/register", [
         check('email').isEmail().normalizeEmail(),
@@ -22,12 +21,7 @@ const userRouter = (dependencies) => {
     ], sanitize,
         controller.login);
 
-    router.get('/search', [
-        query('username').trim().notEmpty()
-    ], sanitize, authenticate,
-        controller.search)
-
     return router;
 };
 
-module.exports = userRouter;
+module.exports = authenticationRouter;
