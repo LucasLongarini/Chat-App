@@ -1,7 +1,8 @@
 const express = require("express");
 const UserController = require('../controllers/userController');
-const { check } = require('express-validator');
+const { check, query } = require('express-validator');
 const sanitize = require('./middleware/sanitize');
+const authenticate = require('./middleware/authenticate');
 
 const userRouter = (dependencies) => {
     const router = express.Router();
@@ -12,16 +13,21 @@ const userRouter = (dependencies) => {
         check('email').isEmail().normalizeEmail(),
         check('password').trim().isLength({ min: 6 }),
         check('username').notEmpty().trim().escape(),
-    ], sanitize, controller.register);
+    ], sanitize,
+        controller.register);
 
     router.post("/login", [
         check('email').isEmail().normalizeEmail(),
         check('password').trim().notEmpty(),
-    ], sanitize, controller.login);
+    ], sanitize,
+        controller.login);
+
+    router.get('/search', [
+        query('username').trim().notEmpty()
+    ], sanitize, authenticate,
+        controller.search)
 
     return router;
 };
-
-
 
 module.exports = userRouter;

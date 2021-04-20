@@ -14,7 +14,7 @@ module.exports = class UserRepository extends BaseRepository {
             let user = await UserSchema.findOne({ email: email });
 
             if (user === null) return undefined;
-    
+
             else {
                 return this.fromSchema(user);
             }
@@ -23,6 +23,25 @@ module.exports = class UserRepository extends BaseRepository {
             return Promise.reject(err);
         }
 
+    }
+
+    async getByUsername(username) {
+        try {
+            let users = await UserSchema.find({ username: { "$regex": username, "$options": "i" } });
+
+            if (users === null || users?.length === 0) return undefined;
+
+            else {
+                return users.map((user) => {
+                    let userModel = this.fromSchema(user);
+                    delete userModel['password'];
+                    return userModel;
+                });
+            }
+        }
+        catch (err) {
+            return Promise.reject(err);
+        }
     }
 
     toSchema(model) {

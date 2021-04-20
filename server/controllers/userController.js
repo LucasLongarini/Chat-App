@@ -38,12 +38,12 @@ module.exports = (dependencies) => {
             const user = await UserRepository.getByEmail(email);
             if (!user || !user?.password)
                 return next(createError(404, "This email does not exist"));
-            
+
             const correctPassword = await AuthService.verifyPassword(password, user.password);
 
             if (!correctPassword)
                 return next(createError(401, "Incorrect password"));
-            
+
             const token = await AuthService.generateToken(user);
             res.cookie('authToken', token, { httpOnly: true });
             delete user['password']; // remove password before sending
@@ -54,8 +54,25 @@ module.exports = (dependencies) => {
         }
     }
 
+    const search = async (req, res, next) => {
+        try {
+            const username = req.query.username;
+
+            const users = await UserRepository.getByUsername(username);
+
+            if (users)
+                return res.status(200).json(users);
+            else
+                next(createError(404));
+        }
+        catch (err) {
+            next(createError(500, err.args));
+        }
+    }
+
     return {
         register,
         login,
+        search
     }
 }

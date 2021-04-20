@@ -7,7 +7,9 @@ const ConversationSchema = mongoose.Schema({
     },
     users: {
         type: [{
-            _id: { type: mongoose.ObjectId }
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
         }],
         index: true
     }

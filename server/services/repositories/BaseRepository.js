@@ -16,6 +16,20 @@ module.exports = class BaseRepository {
 
     } 
 
+    async findById(id) {
+        try {
+            const schemaObject = await this.schema.findById(id);
+            
+            if (schemaObject === null) return undefined;
+
+            return this.fromSchema(schemaObject)
+        }
+
+        catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
     toSchema(model) {
         throw Error("Not Implemented");
     }
