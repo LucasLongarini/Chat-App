@@ -170,7 +170,7 @@ export default function Login() {
       <Grid item xs={false} sm={4} md={5} className={classes.image}>
         <Box className={classes.overlay}>
           <Hidden xsDown>
-            <img width={67} alt="Group of friends chatting" src="/images/chatBubble.png" />
+            <img width={67} src="/images/bubble.svg" />
             <Hidden smDown>
               <p className={classes.heroText}>
                 Converse with anyone with any language
