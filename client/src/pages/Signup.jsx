@@ -26,12 +26,10 @@ const useStyles = makeStyles(theme => ({
     fontSize: 26,
     paddingBottom: 20,
     color: "#000000",
-    fontWeight: 700,
-    fontFamily: "'Open Sans'"
+    fontWeight: 500,
   },
   heroText: {
     fontSize: 26,
-    fontFamily: "'Open Sans'",
     textAlign: "center",
     color: "white",
     marginTop: 30,
@@ -119,22 +117,33 @@ const useStyles = makeStyles(theme => ({
 function useRegister() {
   const history = useHistory();
 
-  const login = async (username, email, password) => {
-    console.log(email, password);
-    const res = await fetch(
-      `/auth/signup?username=${username}&email=${email}&password=${password}`
-    ).then(res => res.json());
-    console.log(res);
-    localStorage.setItem("user", res.user);
-    localStorage.setItem("token", res.token);
+  const register = async (username, email, password) => {
+    const res = await fetch('/authenticate/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username,
+        email: email,
+        password: password
+      })
+    });
+    const result = await res.json();
+
+    if (!res.ok)
+      throw Error(result?.error?.message);
+
+    localStorage.setItem("user", JSON.stringify(result.user));
     history.push("/dashboard");
   };
-  return login;
+  return register;
 }
 
 export default function Register() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("Registration failed");
 
   const register = useRegister();
 
@@ -156,7 +165,7 @@ export default function Register() {
       <Grid item xs={false} sm={4} md={5} className={classes.image}>
         <Box className={classes.overlay}>
           <Hidden xsDown>
-            <img width={67} src="/images/chatBubble.png" />
+            <img width={67} alt="Group of friends chatting" src="/images/chatBubble.png" />
             <Hidden smDown>
               <Typography className={classes.heroText}>
                 Converse with anyone with any language
@@ -185,11 +194,7 @@ export default function Register() {
           <Box width="100%" maxWidth={450} p={3} alignSelf="center">
             <Grid container>
               <Grid item xs>
-                <Typography
-                  className={classes.welcome}
-                  component="h1"
-                  variant="h5"
-                >
+                <Typography className={classes.welcome} component="h1" variant="h5">
                   Create an account
                 </Typography>
               </Grid>
@@ -211,25 +216,18 @@ export default function Register() {
                   .max(100, "Password is too long")
                   .min(6, "Password too short")
               })}
-              onSubmit={(
-                { username, email, password },
-                { setStatus, setSubmitting }
-              ) => {
+              onSubmit={({ username, email, password }, { setStatus, setSubmitting }) => {
                 setStatus();
-                register(username, email, password).then(
-                  () => {
-                    // useHistory push to chat
-                    console.log(email, password);
-                    return;
-                  },
-                  error => {
-                    setSubmitting(false);
-                    setStatus(error);
-                  }
+                register(username, email, password).catch(error => {
+                  setOpen(true);
+                  setErrorMsg(error.message);
+                  setSubmitting(false);
+                  setStatus(error.message);
+                }
                 );
               }}
             >
-              {({ handleSubmit, handleChange, values, touched, errors }) => (
+              {({ handleSubmit, handleChange, values, touched, errors, isSubmitting }) => (
                 <form
                   onSubmit={handleSubmit}
                   className={classes.form}
@@ -243,7 +241,6 @@ export default function Register() {
                       </Typography>
                     }
                     fullWidth
-                    id="username"
                     margin="normal"
                     InputLabelProps={{
                       shrink: true
@@ -298,7 +295,6 @@ export default function Register() {
                     error={touched.password && Boolean(errors.password)}
                     value={values.password}
                     onChange={handleChange}
-                    type="password"
                   />
 
                   <Box textAlign="center">
@@ -308,6 +304,7 @@ export default function Register() {
                       variant="contained"
                       color="primary"
                       className={classes.submit}
+                      disabled={isSubmitting}
                     >
                       Create
                     </Button>
@@ -326,7 +323,7 @@ export default function Register() {
           open={open}
           autoHideDuration={6000}
           onClose={handleClose}
-          message="Email already exists"
+          message={errorMsg}
           action={
             <React.Fragment>
               <IconButton

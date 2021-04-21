@@ -123,20 +123,32 @@ function useLogin() {
   const history = useHistory();
 
   const login = async (email, password) => {
-    console.log(email, password);
-    const res = await fetch(
-      `/auth/login?email=${email}&password=${password}`
-    ).then(res => res.json());
-    localStorage.setItem("user", res.user);
-    localStorage.setItem("token", res.token);
+    const res = await fetch('/authenticate/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    });
+    const result = await res.json();
+
+    if (!res.ok)
+      throw Error(result?.error?.message);
+
+    localStorage.setItem("user", JSON.stringify(result.user));
     history.push("/dashboard");
+
   };
   return login;
 }
 
 export default function Login() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("Login failed");
 
   const history = useHistory();
 
@@ -158,7 +170,7 @@ export default function Login() {
       <Grid item xs={false} sm={4} md={5} className={classes.image}>
         <Box className={classes.overlay}>
           <Hidden xsDown>
-            <img width={67} src="/images/chatBubble.png" />
+            <img width={67} alt="Group of friends chatting" src="/images/chatBubble.png" />
             <Hidden smDown>
               <p className={classes.heroText}>
                 Converse with anyone with any language
@@ -187,9 +199,9 @@ export default function Login() {
           <Box width="100%" maxWidth={450} p={3} alignSelf="center">
             <Grid container>
               <Grid item xs>
-                <p className={classes.welcome} component="h1" variant="h5">
+                <Typography className={classes.welcome} component="h1" variant="h5">
                   Welcome back!
-                </p>
+                </Typography>
               </Grid>
             </Grid>
             <Formik
@@ -208,20 +220,16 @@ export default function Login() {
               })}
               onSubmit={({ email, password }, { setStatus, setSubmitting }) => {
                 setStatus();
-                login(email, password).then(
-                  () => {
-                    // useHistory push to chat
-                    console.log(email, password);
-                    return;
-                  },
-                  error => {
-                    setSubmitting(false);
-                    setStatus(error);
-                  }
+                login(email, password).catch(error => {
+                  setOpen(true);
+                  setErrorMsg(error.message);
+                  setSubmitting(false);
+                  setStatus(error.message);
+                }
                 );
               }}
             >
-              {({ handleSubmit, handleChange, values, touched, errors }) => (
+              {({ handleSubmit, handleChange, values, touched, errors, isSubmitting }) => (
                 <form
                   onSubmit={handleSubmit}
                   className={classes.form}
@@ -270,7 +278,6 @@ export default function Login() {
                     error={touched.password && Boolean(errors.password)}
                     value={values.password}
                     onChange={handleChange}
-                    type="password"
                   />
 
                   <Box textAlign="center">
@@ -280,6 +287,7 @@ export default function Login() {
                       variant="contained"
                       color="primary"
                       className={classes.submit}
+                      disabled={isSubmitting}
                     >
                       Login
                     </Button>
@@ -300,7 +308,7 @@ export default function Login() {
           open={open}
           autoHideDuration={6000}
           onClose={handleClose}
-          message="Login failed"
+          message={errorMsg}
           action={
             <React.Fragment>
               <IconButton
