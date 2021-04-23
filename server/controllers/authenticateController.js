@@ -53,8 +53,24 @@ module.exports = (dependencies) => {
         }
     }
 
+    const authenticate = async (req, res, next) => {
+        try {
+            const userId = req.authData.user.id;
+            const user = await UserRepository.findById(userId);
+
+            if (!user)
+                return next(createError(404));
+
+            return res.status(200).json({ user: user });
+        }
+        catch (err) {
+            next(createError(500, err.args));
+        }
+    }
+
     return {
         register,
         login,
+        authenticate,
     }
 }
