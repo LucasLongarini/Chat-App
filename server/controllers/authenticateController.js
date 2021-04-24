@@ -36,12 +36,12 @@ module.exports = (dependencies) => {
 
             const user = await UserRepository.getByEmail(email, true);
             if (!user || !user?.password)
-                return next(createError(404, "This email does not exist"));
+                return next(createError(404));
 
             const correctPassword = await AuthService.verifyPassword(password, user.password);
 
             if (!correctPassword)
-                return next(createError(401, "Incorrect password"));
+                return next(createError(401));
 
             const token = await AuthService.generateToken(user);
             res.cookie('authToken', token, { httpOnly: true });
