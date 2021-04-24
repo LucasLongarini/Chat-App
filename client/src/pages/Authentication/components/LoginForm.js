@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
         width: "100%", // Fix IE 11 issue.
         marginTop: theme.spacing(1)
     },
-    label: { fontSize: 19, color: "rgb(0,0,0,0.4)", paddingLeft: "5px" },
+    label: { color: "rgb(0,0,0,0.4)", paddingLeft: "5px" },
     submit: {
         margin: theme.spacing(3, 2, 2),
         padding: 10,
@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: "#3a8dff"
     },
     inputs: {
+        fontWeight: 600,
         marginTop: ".8rem",
         height: "2rem",
         padding: "5px"
@@ -70,7 +71,11 @@ function LoginForm({ handleError, handleLogin }) {
                 >
                     <TextField
                         id="email"
-                        label={<p className={classes.label}>E-mail address</p>}
+                        label={
+                            <Typography className={classes.label} variant="h4">
+                                E-mail address
+                            </Typography>
+                        }
                         fullWidth
                         margin="normal"
                         InputLabelProps={{
@@ -88,9 +93,9 @@ function LoginForm({ handleError, handleLogin }) {
                     <TextField
                         id="password"
                         label={
-                            <Typography className={classes.label}>
+                            <Typography className={classes.label} variant="h4">
                                 Password
-                          </Typography>
+                            </Typography>
                         }
                         fullWidth
                         margin="normal"
@@ -126,7 +131,6 @@ function LoginForm({ handleError, handleLogin }) {
                         </Button>
                     </Box>
 
-                    <div style={{ height: 95 }} />
                 </form>
             )}
         </Formik>

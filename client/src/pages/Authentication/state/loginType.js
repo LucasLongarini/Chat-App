@@ -1,6 +1,6 @@
-const loginType = {
+const LoginType = {
     LOGIN: 1,
     REGISTER: 2,
 }
 
-export default loginType;
+export default Object.freeze(LoginType);

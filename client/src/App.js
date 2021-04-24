@@ -8,11 +8,13 @@ import loginType from './pages/Authentication/state/loginType';
 import "./App.css";
 import PrivateRoute from "./components/PrivateRoute";
 import { ProvideAuth } from './hooks/useAuth';
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 function App() {
 
   return (
     <ProvideAuth>
+      <CssBaseline />
       <MuiThemeProvider theme={theme}>
         <BrowserRouter>
           <Route path="/login">

@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: "#3a8dff"
     },
     inputs: {
+        fontWeight: 600,
         marginTop: ".8rem",
         height: "2rem",
         padding: "5px"
@@ -74,9 +75,9 @@ function RegisterForm({ handleError, handleLogin }) {
                     <TextField
                         id="username"
                         label={
-                            <Typography className={classes.label}>
+                            <Typography className={classes.label} varient="h4">
                                 Username
-                      </Typography>
+                            </Typography>
                         }
                         fullWidth
                         margin="normal"
@@ -95,9 +96,9 @@ function RegisterForm({ handleError, handleLogin }) {
                     <TextField
                         id="email"
                         label={
-                            <Typography className={classes.label}>
+                            <Typography className={classes.label} varient="h4">
                                 E-mail address
-                      </Typography>
+                            </Typography>
                         }
                         fullWidth
                         margin="normal"
@@ -115,9 +116,9 @@ function RegisterForm({ handleError, handleLogin }) {
                     <TextField
                         id="password"
                         label={
-                            <Typography className={classes.label}>
+                            <Typography className={classes.label} varient="h4">
                                 Password
-                      </Typography>
+                            </Typography>
                         }
                         fullWidth
                         margin="normal"
@@ -145,7 +146,7 @@ function RegisterForm({ handleError, handleLogin }) {
                             disabled={isSubmitting}
                         >
                             Create
-                    </Button>
+                        </Button>
                     </Box>
                 </form>
             )}
