@@ -35,7 +35,8 @@ async function handleResponse(response) {
     }
 }
 
-export default {
+const apiService = {
     get,
     post,
 }
+export default apiService

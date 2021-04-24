@@ -114,7 +114,7 @@ export default function Authentication({ type }) {
             <Grid item xs={false} sm={3} md={5} className={classes.image}>
                 <Box className={classes.overlay}>
                     <Hidden xsDown>
-                        <img width={67} src="/images/bubble.svg" />
+                        <img alt="img" width={67} src="/images/bubble.svg" />
                         <Hidden smDown>
                             <Typography className={classes.heroText} variant="h2">
                                 Converse with anyone with any language

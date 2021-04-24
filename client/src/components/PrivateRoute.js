@@ -5,17 +5,16 @@ import { useAuth } from '../hooks/useAuth';
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
 function PrivateRoute({ component: Component, ...rest }) {
-    let auth = useAuth();
+    const auth = useAuth();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const authenticate = async () => {
-            const result = await auth.authenticate();
-            // setIsAuthenticated(result);
+            await auth.authenticate();
             setLoading(false);
         };
         authenticate();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <Route {...rest} render={(props) =>
