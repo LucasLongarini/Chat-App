@@ -12,13 +12,8 @@ export default function Dashboard() {
   const auth = useAuth();
 
   async function handleSignout() {
-    try {
-      await auth.signout();
+    if (await auth.signout())
       history.push('/login');
-    }
-    catch (err) {
-      console.log(err)
-    }
   }
   
   return (
