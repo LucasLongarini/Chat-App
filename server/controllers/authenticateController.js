@@ -68,9 +68,15 @@ module.exports = (dependencies) => {
         }
     }
 
+    const signout = async (req, res, next) => {
+        res.clearCookie("authToken");
+        res.status(200).json({ message: "Logged Out" });
+    }
+
     return {
         register,
         login,
         authenticate,
+        signout,
     }
 }

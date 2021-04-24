@@ -7,24 +7,19 @@ import { useAuth } from '../hooks/useAuth';
 function PrivateRoute({ component: Component, ...rest }) {
     let auth = useAuth();
     const [loading, setLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
         const authenticate = async () => {
             const result = await auth.authenticate();
-            setIsAuthenticated(result);
+            // setIsAuthenticated(result);
             setLoading(false);
         };
         authenticate();
     }, []);
 
-    useEffect(() => {
-        setIsAuthenticated(auth.user)
-    }, [auth.user]);
-
     return (
         <Route {...rest} render={(props) =>
-            isAuthenticated ? <Component {...props} />
+            auth.user ? <Component {...props} />
                 :
                 loading ? <div></div>
                     :

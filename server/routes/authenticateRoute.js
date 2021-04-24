@@ -22,6 +22,8 @@ const authenticationRouter = (dependencies) => {
     ], sanitize,
         controller.login);
 
+    router.post("/signout", controller.signout);
+
     router.get("/", authenticate, controller.authenticate);
 
     return router;

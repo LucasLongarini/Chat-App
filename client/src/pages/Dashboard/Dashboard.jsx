@@ -10,17 +10,23 @@ import { useAuth } from '../../hooks/useAuth'
 export default function Dashboard() {
   const history = useHistory();
   const auth = useAuth();
+
+  async function handleSignout() {
+    try {
+      await auth.signout();
+      history.push('/login');
+    }
+    catch (err) {
+      console.log(err)
+    }
+  }
   
   return (
     <>
       {/* For testing purposes right now, ignore styling */}
       <p>Dashboard</p>
       <p>User: {JSON.stringify(auth.user)}</p>
-      <button
-        onClick={() => {
-          history.push("/login");
-        }}
-      >
+      <button onClick={handleSignout}>
         Logout
       </button>
     </>

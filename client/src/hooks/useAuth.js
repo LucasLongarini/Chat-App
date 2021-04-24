@@ -54,7 +54,8 @@ function useProvideAuth() {
     }
 
     // removes the authToken cookie
-    const signout = () => {
+    const signout = async () => {
+        await APIService.post('/authenticate/signout');
         setUser(null);
         return true;
     };

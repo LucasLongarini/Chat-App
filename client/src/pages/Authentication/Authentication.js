@@ -104,9 +104,9 @@ export default function Authentication({ type }) {
         history.push('/dashboard');
     }
 
-    function handleError(errorMsg) {
+    function handleError() {
         setOpen(true);
-        setErrorMsg(errorMsg);
+        setErrorMsg("Login Failed");
     }
 
     return (
