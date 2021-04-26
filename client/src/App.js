@@ -14,8 +14,8 @@ function App() {
 
   return (
     <ProvideAuth>
-      <CssBaseline />
       <MuiThemeProvider theme={theme}>
+        <CssBaseline />
         <BrowserRouter>
           <Route path="/login">
             <AuthenticationPage type={loginType.LOGIN} />

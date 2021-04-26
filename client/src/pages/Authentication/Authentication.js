@@ -55,6 +55,7 @@ const useStyles = makeStyles(theme => ({
         width: 170,
         height: 54,
         fontSize: 14,
+        fontWeight: 600,
         borderRadius: 5,
         filter: "drop-shadow(0px 2px 6px rgba(74,106,149,0.2))",
         backgroundColor: "#ffffff",
