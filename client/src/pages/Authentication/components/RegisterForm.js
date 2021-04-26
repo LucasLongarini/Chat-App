@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
         width: "100%", // Fix IE 11 issue.
         marginTop: theme.spacing(1)
     },
-    label: { fontSize: 19, color: "rgb(0,0,0,0.4)", paddingLeft: "5px" },
+    label: { color: "rgb(0,0,0,0.4)", paddingLeft: "5px" },
     submit: {
         margin: theme.spacing(3, 2, 2),
         padding: 10,
@@ -75,7 +75,7 @@ function RegisterForm({ handleError, handleLogin }) {
                     <TextField
                         id="username"
                         label={
-                            <Typography className={classes.label} varient="h4">
+                            <Typography className={classes.label} variant="h4">
                                 Username
                             </Typography>
                         }
@@ -96,7 +96,7 @@ function RegisterForm({ handleError, handleLogin }) {
                     <TextField
                         id="email"
                         label={
-                            <Typography className={classes.label} varient="h4">
+                            <Typography className={classes.label} variant="h4">
                                 E-mail address
                             </Typography>
                         }
@@ -116,7 +116,7 @@ function RegisterForm({ handleError, handleLogin }) {
                     <TextField
                         id="password"
                         label={
-                            <Typography className={classes.label} varient="h4">
+                            <Typography className={classes.label} variant="h4">
                                 Password
                             </Typography>
                         }

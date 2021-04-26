@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@material-ui/core";
+import { MuiThemeProvider } from "@material-ui/core";
 import { theme } from "./themes/theme.js";
 // import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 import { BrowserRouter, Route, Redirect } from "react-router-dom";
@@ -14,7 +14,7 @@ function App() {
 
   return (
     <ProvideAuth>
-      <ThemeProvider theme={theme}>
+      <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter>
           <Route path="/login">
@@ -28,7 +28,7 @@ function App() {
             <Redirect to="/dashboard" />
           </Route>
         </BrowserRouter>
-      </ThemeProvider>
+      </MuiThemeProvider>
     </ProvideAuth>
   );
 }
