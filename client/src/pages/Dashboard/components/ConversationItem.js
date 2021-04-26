@@ -1,19 +1,18 @@
 import { Avatar, Badge, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
+import OnlineCircle from '../../../components/OnlineCirclie';
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        
+    interactive: {
+        transition: 'all 0.3s ease',
+        '&:hover': {
+            cursor: 'pointer',
+            transform: 'scale(1.03)'
+        }
     },
     avatar: {
         width: 44,
         height: 44
-    },
-    badge: {
-        height: 9,
-        width: 9,
-        borderRadius: 100,
-        boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
     },
     subText: {
         color: '#9CADC8',
@@ -21,11 +20,11 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function ConversationItem({ title, detail }) {
+export default function ConversationItem({ title, detail, onlineStatus, interactive = true }) {
     const classes = useStyles();
 
     return (
-        <Grid className={classes.root} container direction="row" alignItems="center" spacing={3}>
+        <Grid className={interactive ? classes.interactive : null} container direction="row" alignItems="center" spacing={3}>
             <Grid item>
                 <Badge
                     overlap="circle"
@@ -33,7 +32,7 @@ export default function ConversationItem({ title, detail }) {
                         vertical: 'bottom',
                         horizontal: 'right',
                     }}
-                    badgeContent={<div style={{ backgroundColor: "red" }} className={classes.badge} />}
+                    badgeContent={<OnlineCircle onlineStatus={onlineStatus} />}
                 >
                     <Avatar className={classes.avatar} alt="Remy Sharp" />
                 </Badge>
@@ -42,12 +41,12 @@ export default function ConversationItem({ title, detail }) {
             <Grid item>
                 {title &&
                     <Typography variant="h5">
-                        Lucas Longarini
+                        {title}
                     </Typography>
                 }
                 {detail &&
                     <Typography className={classes.subText} variant="h6">
-                        Do you have plans?
+                        {detail}
                     </Typography>
                 }
             </Grid>

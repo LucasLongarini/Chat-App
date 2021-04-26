@@ -1,16 +1,26 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { useAuth } from '../../hooks/useAuth'
-import { Grid } from '@material-ui/core';
+import { Grid, Box } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 
 import ConversationList from './components/ConversationList';
+import ChatContainer from './components/ChatContainer';
 
 const useStyles = makeStyles(theme => ({
   root: {
-      minHeight: "100vh",
+    height: "100vh",
+    position: 'relative'
   },
-  
+  gridItem: {
+    height: "100%"
+  },
+  conversationContainer: {
+    height: '100%',
+    overflow: 'hidden'
+  },
+  chatContainer: {
+  }
 }));
 
 export default function Dashboard() {
@@ -18,19 +28,23 @@ export default function Dashboard() {
   const auth = useAuth();
   const classes = useStyles();
 
+  console.log(auth);
+
   async function handleSignout() {
     if (await auth.signout())
       history.push('/login');
   }
 
   return (
-    <Grid container className={classes.root}>
-      <Grid item xs={3}>
-        <ConversationList />
+    <Grid className={classes.root} container>
+      <Grid item className={classes.gridItem}>
+        <Box className={classes.conversationContainer} minWidth={300} maxWidth={400} width={'30vw'} >
+          <ConversationList signoutCallback={handleSignout} username={auth?.user?.username} />
+        </Box>
       </Grid>
 
-      <Grid item xs={9}>
-        <div></div>
+      <Grid className={classes.gridItem} item xs>
+        <ChatContainer />
       </Grid>
     </Grid>
   );

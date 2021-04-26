@@ -1,11 +1,15 @@
-import { Grid, Box, Typography, Input, Icon } from "@material-ui/core";
+import { useState } from 'react';
+import { Grid, Box, Typography, Input, Icon, IconButton, Menu, MenuItem } from "@material-ui/core";
 import ConversationItem from './ConversationItem';
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from '@material-ui/icons/Search';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import OnlineStatus from '../../../state/OnlineStatus';
 
 const useStyles = makeStyles(theme => ({
     root: {
-        marginLeft: 20,
+        height: '100%',
+        paddingLeft: theme.spacing(3),
     },
     profile: {
         margin: "30px 0",
@@ -15,14 +19,20 @@ const useStyles = makeStyles(theme => ({
     },
     inputContainer: {
         borderRadius: 5,
+        marginBottom: 20,
         backgroundColor: '#E9EEF9',
+    },
+    seeMoreButton: {
+        color: '#95A7C4',
+        '& svg': {
+            fontSize: 20
+        }
     },
     input: {
         padding: '18px 18px 18px 10px',
         fontWeight: 600,
         fontSize: 13,
         '&::placeholder': {
-            color: '#000000',
             color: '#B1C3DF',
             opacity: 1,
         }
@@ -31,8 +41,11 @@ const useStyles = makeStyles(theme => ({
         color: '#B1C3DF',
         marginLeft: 18
     },
+    listContainer: {
+        overflowY: 'scroll',
+        overflowX: 'hidden',
+    },
     list: {
-        marginTop: 20,
         marginBottom: 20,
         paddingLeft: 16
     },
@@ -42,12 +55,45 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function ConversationList() {
+export default function ConversationList({ signoutCallback, username }) {
     const classes = useStyles();
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleOpenMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
+
+    const handleSignout = () => {
+        handleCloseMenu();
+        signoutCallback();
+    }
 
     return (
-        <Grid container className={classes.root} spacing={0} direction='column'>
-            <Grid className={classes.profile} item ><ConversationItem title="Lucas Longarini" /></Grid>
+        <Grid container className={classes.root} spacing={0} direction='column' justify="flex-start" wrap="nowrap">
+            <Grid className={classes.profile} item >
+                <Grid container direction="row" justify="space-between" alignItems="center" wrap='nowrap'>
+                    <Grid item ><ConversationItem title={username} onlineStatus={OnlineStatus.ONLINE} interactive={false}/></Grid>
+                    <Grid item>
+                        <IconButton onClick={handleOpenMenu} className={classes.seeMoreButton}>
+                            <MoreHorizIcon />
+                        </IconButton>
+                        <Menu
+                            id="menu"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl)}
+                            onClose={handleCloseMenu}
+                        >
+                            <MenuItem onClick={handleSignout}>Logout</MenuItem>
+                            <MenuItem onClick={handleSignout}>Start a new conversation</MenuItem>
+                        </Menu>
+                    </Grid>
+                </Grid>
+            </Grid>
 
             <Grid item>
                 <Typography className={classes.chatLabel} variant="h3">
@@ -64,22 +110,20 @@ export default function ConversationList() {
                         variant="filled"
                         fullWidth
                         inputProps={{ className: classes.input }}
-                        startAdornment={<Icon className={classes.searchIcon}><SearchIcon/></Icon>}
+                        startAdornment={<Icon className={classes.searchIcon}><SearchIcon /></Icon>}
                     />
                 </Box>
             </Grid>
 
-            <Grid item>
-                <Box className={classes.listContainer} style={{ maxHeight: '100vh', overflowX: 'hidden' }} >
-                    <Grid className={classes.list} container direction="column" spacing={5}>
-                        <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                        <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                        <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                        <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                        <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                        <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                    </Grid>
-                </Box>
+            <Grid className={classes.listContainer} item>
+                <Grid className={classes.list} container direction="column" spacing={5}>
+                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
+                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
+                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
+                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
+                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
+                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
+                </Grid>
             </Grid>
         </Grid>
 

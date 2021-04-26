@@ -6,19 +6,19 @@ export const theme = createMuiTheme({
     fontSize: 14,
     h1: {
       fontSize: 26,
-      fontWeight: 600 
+      fontWeight: 600
     },
     h2: {
       fontSize: 26,
-      fontWeight: 400 
+      fontWeight: 400
     },
     h3: {
       fontSize: 19,
-      fontWeight: 600 
+      fontWeight: 600
     },
     h4: {
       fontSize: 19,
-      fontWeight: 400 
+      fontWeight: 400
     },
     h5: {
       fontSize: 14,
@@ -36,5 +36,8 @@ export const theme = createMuiTheme({
   },
   palette: {
     primary: { main: "#3A8DFF" },
+    lightText: '#BFC9DB',
+    online: '#32CD32',
+    offline: 'lightGray'
   }
 });
