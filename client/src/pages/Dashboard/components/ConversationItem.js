@@ -7,7 +7,8 @@ const useStyles = makeStyles(theme => ({
         transition: 'all 0.3s ease',
         '&:hover': {
             cursor: 'pointer',
-            transform: 'scale(1.03)'
+            transform: 'scale(1.03)',
+            backgroundColor: '#5885C40B'
         }
     },
     avatar: {
