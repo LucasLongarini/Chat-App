@@ -6,7 +6,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         width: "100%",
         display: 'flex',
-        margin: "10px 0"
+        margin: "10px 0",
     },
     chatContainer: {
         width: "60%",
@@ -47,7 +47,7 @@ export default function ChatItem({ message, users }) {
 
     return (
         <Box className={classes.root} style={{justifyContent: didSend ? "flex-end" : "flex-start"}}>
-            <Grid className={classes.chatContainer} container alignItems="flex-start" wrap="nowrap" spacing={1}>
+            <Grid className={classes.chatContainer} container justify={didSend ? "flex-end" : "flex-start"} wrap="nowrap" spacing={1}>
                 {!didSend &&
                     <Grid item>
                         <Avatar className={classes.avatar} />
@@ -64,6 +64,7 @@ export default function ChatItem({ message, users }) {
                         <Grid item>
                             <Typography className={`${classes.chatText} ${didSend ? classes.sent : classes.received}`} variant="h5">
                                 {message.content}
+                                {/* ASDOIASJD ADOJAPODIJA DPUHPOSDJFOSDJIF SOFSPDHF PS SDF SFOSJFSODJ FSD  */}
                             </Typography>
                         </Grid>
                     </Grid>

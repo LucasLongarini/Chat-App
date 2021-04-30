@@ -14,7 +14,8 @@ import AddConversationModal from "./components/AddConversationModal";
 const useStyles = makeStyles(theme => ({
   root: {
     height: "100vh",
-    position: 'relative'
+    position: 'relative',
+    overflow: 'hidden'
   },
   ConversationContainer: {
     height: "100%",
