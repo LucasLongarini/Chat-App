@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useAuth } from '../../hooks/useAuth'
-import { Grid, Box } from '@material-ui/core';
+import { Grid, Box, Modal, IconButton, Snackbar } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import withWidth, { isWidthDown } from '@material-ui/core/withWidth';
+import CloseIcon from "@material-ui/icons/Close";
 
 import ConversationList from './components/ConversationList';
-import ChatContainer from './components/ChatList';
+import ChatList from './components/ChatList';
 import ConversationService from '../../services/conversationService';
+import AddConversationModal from "./components/AddConversationModal";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,6 +42,10 @@ function Dashboard({ width }) {
   const [mobile, setMobile] = useState(isWidthDown('sm', width));
   const [isConversationOpen, setIsConversationOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('Error');
+  const [selectedIndex, setSelectedIndex] = useState();
 
   useEffect(() => {
     async function getConversations() {
@@ -47,7 +53,7 @@ function Dashboard({ width }) {
         const conversations = await ConversationService.getConversations();
         setConversations(conversations);
       }
-      catch {}
+      catch { }
     }
     getConversations();
   }, []);
@@ -61,23 +67,83 @@ function Dashboard({ width }) {
       history.push('/login');
   }
 
+  async function handleNewConversation(userId) {
+    try {
+      const conversation = await ConversationService.createNewConversation(userId);
+      if (conversation)
+        setConversations(oldConversations => [...oldConversations, conversation]);
+
+      setModalOpen(false);
+    }
+    catch (err) {
+      setErrorMsg(err);
+      setErrorOpen(true);
+    }
+
+  }
+
+  function handleConversationSelected(index) {
+    setSelectedIndex(index);
+
+    if (index !== undefined) 
+      setIsConversationOpen(true);
+    
+    else
+      setIsConversationOpen(false);
+  }
+
   return (
-    <Grid className={classes.root} container>
+    <div>
+      <Grid className={classes.root} container>
 
-      {(!mobile || (mobile && !isConversationOpen)) &&
-        <Grid item container className={`${classes.gridItem} ${classes.ConversationContainer}`} justify="center">
-          <Box className={classes.ConversationContainer}>
-            <ConversationList conversations={conversations} signoutCallback={handleSignout} username={auth?.user?.username} />
-          </Box>
-        </Grid>
-      }
+        {(!mobile || (mobile && !isConversationOpen)) && (
+          <Grid item container className={`${classes.gridItem} ${classes.ConversationContainer}`} justify="center">
+            <Box className={classes.ConversationContainer}>
+              <ConversationList
+                addConversationCallback={() => setModalOpen(true)}
+                conversations={conversations}
+                signoutCallback={handleSignout}
+                selectedIndex={selectedIndex}
+                selectConversationCallback={(i) => handleConversationSelected(i)}
+              />
+            </Box>
+          </Grid>
+        )}
 
-      {(!mobile || (mobile && isConversationOpen)) &&
-        <Grid className={classes.gridItem} item xs>
-          <ChatContainer />
-        </Grid>
-      }
-    </Grid>
+        {(!mobile || (mobile && isConversationOpen)) && (
+          <Grid className={classes.gridItem} item xs>
+            <ChatList backButtonCallback={() => handleConversationSelected(undefined)}/>
+          </Grid>
+        )}
+      </Grid>
+
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      >
+        {<AddConversationModal addConversationCallback={(userId) => handleNewConversation(userId)} />}
+      </Modal>
+
+      <Snackbar anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "center"
+      }}
+        open={errorOpen}
+        autoHideDuration={6000}
+        onClose={() => setErrorOpen(false)}
+        message={errorMsg}
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={() => setErrorOpen(false)}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
+      />
+    </div>
   );
 }
 

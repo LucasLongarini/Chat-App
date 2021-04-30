@@ -1,12 +1,14 @@
-import { useState } from 'react';
-import { Grid, Box, Typography, Input, Icon, IconButton, Menu, MenuItem, Button } from "@material-ui/core";
+import { useState, useMemo } from 'react';
+import { Grid, Typography, IconButton, Menu, MenuItem, Button } from "@material-ui/core";
 import ConversationItem from './ConversationItem';
 import { makeStyles } from "@material-ui/core/styles";
-import SearchIcon from '@material-ui/icons/Search';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import OnlineStatus from '../../../state/OnlineStatus';
 import AddIcon from '@material-ui/icons/Add';
+import { useAuth } from '../../../hooks/useAuth'
+
+import SearchInput from '../../../components/SearchInput';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -21,11 +23,6 @@ const useStyles = makeStyles(theme => ({
         marginTop: 20,
         marginBottom: 12
     },
-    inputContainer: {
-        borderRadius: 5,
-        marginBottom: 20,
-        backgroundColor: '#E9EEF9',
-    },
     icon: {
         color: '#95A7C4',
     },
@@ -34,39 +31,33 @@ const useStyles = makeStyles(theme => ({
             fontSize: 20
         }
     },
-    input: {
-        padding: '18px 18px 18px 10px',
-        fontWeight: 600,
-        fontSize: 13,
-        '&::placeholder': {
-            color: '#B1C3DF',
-            opacity: 1,
-        }
-    },
-    searchIcon: {
-        color: '#B1C3DF',
-        marginLeft: 18
-    },
     listContainer: {
         overflowY: 'auto',
         overflowX: 'hidden',
     },
     list: {
+        paddingTop: 10,
         marginBottom: 20,
         paddingLeft: 16
-    },
-    listItem: {
-        borderRadius: 8,
-        boxShadow: "0 2px 10px 0 #5885C40C"
     },
     selectedListItem: {
         backgroundColor: '#5885C41C'
     }
 }));
 
-export default function ConversationList({ conversations, signoutCallback, username }) {
+export default function ConversationList({ conversations, signoutCallback, addConversationCallback, selectedIndex, selectConversationCallback }) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
+    const auth = useAuth();
+    const parsedConversations = useMemo(() => {
+        return conversations?.map(conversation => {
+            const otherUser = conversation.users?.filter(user => user.id !== auth.user.id)[0];
+            conversation.otherUser = otherUser;
+            if (conversation.latestMessage)
+                conversation.latestMessage.isRecieved = conversation.latestMessage.fromUserId === auth?.user?.userId;
+            return conversation;
+        });
+    }, [conversations, auth]);
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -85,7 +76,7 @@ export default function ConversationList({ conversations, signoutCallback, usern
         <Grid container className={classes.root} spacing={0} direction='column' justify="flex-start" wrap="nowrap">
             <Grid className={classes.profile} item >
                 <Grid container direction="row" justify="space-between" alignItems="center" wrap='nowrap'>
-                    <Grid item ><ConversationItem title={username} onlineStatus={OnlineStatus.ONLINE} interactive={false} /></Grid>
+                    <Grid item ><ConversationItem title={auth?.user?.username} onlineStatus={OnlineStatus.ONLINE} interactive={false} /></Grid>
                     <Grid item>
                         <IconButton onClick={handleOpenMenu} className={`${classes.icon} ${classes.seeMoreButton}`}>
                             <MoreHorizIcon />
@@ -109,36 +100,31 @@ export default function ConversationList({ conversations, signoutCallback, usern
                 </Typography>
                 <Button variant="outlined" color="primary"
                     startIcon={<AddIcon />}
+                    onClick={addConversationCallback}
                 >
                     Start conversation
                 </Button>
             </Grid>
 
             <Grid item>
-                <Box className={classes.inputContainer}>
-                    <Input
-                        disableUnderline
-                        id="filled-basic"
-                        placeholder="Search"
-                        variant="filled"
-                        fullWidth
-                        inputProps={{ className: classes.input }}
-                        startAdornment={<Icon className={classes.searchIcon}><SearchIcon /></Icon>}
-                    />
-                </Box>
+                <SearchInput />
             </Grid>
 
             <Grid className={classes.listContainer} item>
                 <Grid className={classes.list} container direction="column" spacing={5}>
-                    {conversations?.map(conversation => {
+                    {parsedConversations?.map((conversation, i) => {
                         return (
-                            <Grid className={classes.listItem} item >
-                                <ConversationItem title="Lucas Longarini" detail="Whats up?" />
+                            <Grid onClick={()=>selectConversationCallback(i)} key={conversation.id} item >
+                                <ConversationItem
+                                    title={conversation.otherUser.username}
+                                    detail={conversation.latestMessage?.content}
+                                    selected={i === selectedIndex}
+                                />
                             </Grid>
                         );
                     })}
 
-                    {/* <Grid className={`${classes.listItem}`} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
+                    {/* <Grid className={classes.listItem} item ><ConversationItem selected title="Lucas Longarini" detail="Whats up?" /></Grid>
                     <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
                     <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
                     <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>

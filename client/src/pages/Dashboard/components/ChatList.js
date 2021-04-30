@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Box, Typography, IconButton, MenuItem, Menu, Input, Hidden } from '@material-ui/core';
+import { Grid, Box, Typography, IconButton, Input, Hidden } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import OnlineStatus from '../../../state/OnlineStatus';
 import OnlineCircle from '../../../components/OnlineCirclie';
@@ -63,17 +63,8 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function ChatList({ username, onlineStatus }) {
+export default function ChatList({ username, onlineStatus, backButtonCallback }) {
     const classes = useStyles();
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    const handleOpenMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-    };
 
     return (
         <Grid className={classes.root} container direction="column" justify="space-between" wrap="nowrap">
@@ -82,7 +73,7 @@ export default function ChatList({ username, onlineStatus }) {
                     <Grid container spacing={0} alignItems="center">
                         <Hidden mdUp>
                             <Grid item >
-                                    <IconButton>
+                                    <IconButton onClick={backButtonCallback}>
                                         <ArrowBackIosIcon />
                                     </IconButton>
                             </Grid>
@@ -108,16 +99,7 @@ export default function ChatList({ username, onlineStatus }) {
                     </Grid>
                 </Grid>
                 <Grid item>
-                    <Menu
-                        id="menu"
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={handleCloseMenu}
-                    >
-                        <MenuItem>Delete conversation</MenuItem>
-                    </Menu>
-                    <IconButton onClick={handleOpenMenu} className={classes.seeMoreButton}>
+                    <IconButton className={classes.seeMoreButton}>
                         <MoreHorizIcon />
                     </IconButton>
                 </Grid>
@@ -135,6 +117,7 @@ export default function ChatList({ username, onlineStatus }) {
                 <Box className={classes.inputContainer}>
                     <Input
                         disableUnderline
+                        multiline
                         id="Chat-input"
                         placeholder="Type something..."
                         variant="filled"

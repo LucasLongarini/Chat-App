@@ -3,8 +3,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import OnlineCircle from '../../../components/OnlineCirclie';
 
 const useStyles = makeStyles(theme => ({
+    selected: {
+        backgroundColor: '#eee'
+    },
     interactive: {
         transition: 'all 0.3s ease',
+        borderRadius: 8,
+        boxShadow: "0 2px 10px 0 #5885C40C",
+        
         '&:hover': {
             cursor: 'pointer',
             transform: 'scale(1.03)',
@@ -21,11 +27,11 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function ConversationItem({ title, detail, onlineStatus, interactive = true }) {
+export default function ConversationItem({ title, detail, onlineStatus, badge=true, selected=false, interactive = true }) {
     const classes = useStyles();
 
     return (
-        <Grid className={interactive ? classes.interactive : null} container direction="row" alignItems="center" spacing={3}>
+        <Grid className={`${interactive&&!selected ? classes.interactive : null} ${selected ? classes.selected : null}`} container direction="row" alignItems="center" spacing={3}>
             <Grid item>
                 <Badge
                     overlap="circle"
@@ -33,7 +39,7 @@ export default function ConversationItem({ title, detail, onlineStatus, interact
                         vertical: 'bottom',
                         horizontal: 'right',
                     }}
-                    badgeContent={<OnlineCircle onlineStatus={onlineStatus} />}
+                    badgeContent={badge && <OnlineCircle onlineStatus={onlineStatus} /> || <div/>}
                 >
                     <Avatar className={classes.avatar} alt="Remy Sharp" />
                 </Badge>
