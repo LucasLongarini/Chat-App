@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useAuth } from '../../hooks/useAuth'
-import { Grid, Box, Modal, IconButton, Snackbar } from '@material-ui/core';
+import { Grid, Box, Modal, IconButton, Snackbar, Typography, Button } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import withWidth, { isWidthDown } from '@material-ui/core/withWidth';
 import CloseIcon from "@material-ui/icons/Close";
@@ -86,6 +86,10 @@ function Dashboard({ width }) {
     setSelectedConversation(conversation);
   }
 
+  function handleOpenModal() {
+    setModalOpen(true);
+  }
+
   return (
     <div>
       <Grid className={classes.root} container>
@@ -94,7 +98,7 @@ function Dashboard({ width }) {
           <Grid item container className={`${classes.gridItem} ${classes.ConversationContainer}`} justify="center">
             <Box className={classes.ConversationContainer}>
               <ConversationList
-                addConversationCallback={() => setModalOpen(true)}
+                addConversationCallback={handleOpenModal}
                 conversations={conversations}
                 signoutCallback={handleSignout}
                 selectedConversation={selectedConversation}
@@ -105,12 +109,25 @@ function Dashboard({ width }) {
         )}
 
         {(!mobile || (mobile && selectedConversation)) && (
-          <Grid className={classes.gridItem} item xs>
-            <ChatList
-              selectedConversation={selectedConversation}
-              backButtonCallback={() => handleConversationSelected(undefined)}
-            />
-          </Grid>
+
+          selectedConversation ?
+            <Grid className={classes.gridItem} item xs>
+              <ChatList
+                selectedConversation={selectedConversation}
+                backButtonCallback={() => handleConversationSelected(undefined)}
+              />
+            </Grid>
+            :
+            <Grid className={classes.gridItem} container item xs justify="center" direction="column" alignItems="center" spacing={2}>
+              <Grid item>
+                <Typography variant="h1">No conversation selected</Typography>
+              </Grid>
+              <Grid item>
+                <Button color="primary" variant="contained" onClick={handleOpenModal}>
+                  Start Conversation
+                </Button>
+              </Grid>
+            </Grid>
         )}
       </Grid>
 
