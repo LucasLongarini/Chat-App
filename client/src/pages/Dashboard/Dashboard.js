@@ -40,12 +40,11 @@ function Dashboard({ width }) {
   const auth = useAuth();
   const classes = useStyles();
   const [mobile, setMobile] = useState(isWidthDown('sm', width));
-  const [isConversationOpen, setIsConversationOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('Error');
-  const [selectedIndex, setSelectedIndex] = useState();
+  const [selectedConversation, setSelectedConversation] = useState();
 
   useEffect(() => {
     async function getConversations() {
@@ -83,36 +82,34 @@ function Dashboard({ width }) {
   }
 
   function handleConversationSelected(index) {
-    setSelectedIndex(index);
-
-    if (index !== undefined) 
-      setIsConversationOpen(true);
-    
-    else
-      setIsConversationOpen(false);
+    const conversation = conversations[index];
+    setSelectedConversation(conversation);
   }
 
   return (
     <div>
       <Grid className={classes.root} container>
 
-        {(!mobile || (mobile && !isConversationOpen)) && (
+        {(!mobile || (mobile && !selectedConversation)) && (
           <Grid item container className={`${classes.gridItem} ${classes.ConversationContainer}`} justify="center">
             <Box className={classes.ConversationContainer}>
               <ConversationList
                 addConversationCallback={() => setModalOpen(true)}
                 conversations={conversations}
                 signoutCallback={handleSignout}
-                selectedIndex={selectedIndex}
+                selectedConversation={selectedConversation}
                 selectConversationCallback={(i) => handleConversationSelected(i)}
               />
             </Box>
           </Grid>
         )}
 
-        {(!mobile || (mobile && isConversationOpen)) && (
+        {(!mobile || (mobile && selectedConversation)) && (
           <Grid className={classes.gridItem} item xs>
-            <ChatList backButtonCallback={() => handleConversationSelected(undefined)}/>
+            <ChatList
+              selectedConversation={selectedConversation}
+              backButtonCallback={() => handleConversationSelected(undefined)}
+            />
           </Grid>
         )}
       </Grid>

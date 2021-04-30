@@ -29,7 +29,18 @@ async function createNewConversation(userId) {
     return response.conversation;
 }
 
+async function getMessages(conversationId) {
+    try {
+        const response = await apiService.get(`/conversations/${conversationId}/messages`);
+        return response?.messages ?? [];
+    }
+    catch {
+        return [];
+    }
+}
+
 const conversationService = {
+    getMessages,
     createNewConversation,
     getConversations,
     searchUsers,

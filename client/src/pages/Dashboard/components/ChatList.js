@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Box, Typography, IconButton, Input, Hidden } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
@@ -8,6 +8,9 @@ import ChatItem from './ChatItem';
 import EmojiIcon from '@material-ui/icons/SentimentSatisfiedOutlined';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibraryOutlined';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+
+import ConversationService from '../../../services/conversationService';
+import { useAuth } from '../../../hooks/useAuth';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -63,8 +66,24 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function ChatList({ username, onlineStatus, backButtonCallback }) {
+export default function ChatList({ onlineStatus, backButtonCallback, selectedConversation }) {
     const classes = useStyles();
+    const [messages, setMessages] = useState();
+    const auth = useAuth();
+
+    useEffect(() => {
+        async function getMessages() {
+            if (selectedConversation?.id) {
+                const messages = await ConversationService.getMessages(selectedConversation.id);
+                setMessages(messages);
+            }
+        };
+        getMessages();
+    }, [selectedConversation]);
+
+    const otherUser = useMemo(() => {
+        return selectedConversation?.users?.filter(user => user.id !== auth?.user?.id)[0];
+    }, [selectedConversation, auth]);
 
     return (
         <Grid className={classes.root} container direction="column" justify="space-between" wrap="nowrap">
@@ -73,15 +92,15 @@ export default function ChatList({ username, onlineStatus, backButtonCallback })
                     <Grid container spacing={0} alignItems="center">
                         <Hidden mdUp>
                             <Grid item >
-                                    <IconButton onClick={backButtonCallback}>
-                                        <ArrowBackIosIcon />
-                                    </IconButton>
+                                <IconButton onClick={backButtonCallback}>
+                                    <ArrowBackIosIcon />
+                                </IconButton>
                             </Grid>
                         </Hidden>
-                        
+
                         <Grid item >
                             <Typography variant="h3">
-                                Lucas Longarini
+                                {otherUser?.username}
                             </Typography>
                         </Grid>
                         <Grid item className={classes.onlineContainer}>
@@ -105,12 +124,14 @@ export default function ChatList({ username, onlineStatus, backButtonCallback })
                 </Grid>
             </Grid>
 
-            <Grid item xs container className={classes.chatListContainer} direction="column-reverse" justify="flex-start" alignItems="stretch" wrap="nowrap">
-                <Grid item><ChatItem didSend={true} /></Grid>
-                <Grid item><ChatItem didSend={false} /></Grid>
-                <Grid item><ChatItem didSend={true} /></Grid>
-                <Grid item><ChatItem didSend={false} /></Grid>
-                <Grid item><ChatItem didSend={true} /></Grid>
+            <Grid item xs container className={classes.chatListContainer} direction="column" justify="flex-end" alignItems="stretch" wrap="nowrap">
+                {messages?.map(message => {
+                    return (
+                        <Grid item key={message.id}>
+                            <ChatItem message={message} users={selectedConversation.users} />
+                        </Grid>
+                    );
+                })}
             </Grid>
 
             <Grid item>

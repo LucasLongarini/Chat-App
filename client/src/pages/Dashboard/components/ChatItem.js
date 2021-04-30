@@ -1,5 +1,6 @@
 import { Grid, Box, Avatar, Typography } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
+import { useAuth } from '../../../hooks/useAuth';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -36,8 +37,13 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function ChatItem({ didSend }) {
+export default function ChatItem({ message, users }) {
     const classes = useStyles();
+    const auth = useAuth();
+
+    const user = users?.filter(user => user.id === message?.fromUserId)[0];
+    const didSend = user?.id === auth?.user?.id;
+    const time = (new Date(message.sent)).toTimeString().split(':');
 
     return (
         <Box className={classes.root} style={{justifyContent: didSend ? "flex-end" : "flex-start"}}>
@@ -52,12 +58,12 @@ export default function ChatItem({ didSend }) {
                     <Grid container wrap="nowrap" direction="column">
                         <Grid item>
                             <Typography className={classes.dateText} variant="h6" style={{ textAlign: didSend ? "end" : "start" }}>
-                                lucaslong
+                                {`${!didSend ? user.username : ''} ${time[0]}:${time[1]}`}
                             </Typography>
                         </Grid>
                         <Grid item>
                             <Typography className={`${classes.chatText} ${didSend ? classes.sent : classes.received}`} variant="h5">
-                                Hello world, this is a test psaoifjapsodifj pasodjf paosdfji paosidjf osdjf psodifj spoij
+                                {message.content}
                             </Typography>
                         </Grid>
                     </Grid>

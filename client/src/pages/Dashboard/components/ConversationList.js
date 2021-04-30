@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function ConversationList({ conversations, signoutCallback, addConversationCallback, selectedIndex, selectConversationCallback }) {
+export default function ConversationList({ conversations, signoutCallback, addConversationCallback, selectedConversation, selectConversationCallback }) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const auth = useAuth();
@@ -118,17 +118,11 @@ export default function ConversationList({ conversations, signoutCallback, addCo
                                 <ConversationItem
                                     title={conversation.otherUser.username}
                                     detail={conversation.latestMessage?.content}
-                                    selected={i === selectedIndex}
+                                    selected={conversation?.id === selectedConversation?.id}
                                 />
                             </Grid>
                         );
                     })}
-
-                    {/* <Grid className={classes.listItem} item ><ConversationItem selected title="Lucas Longarini" detail="Whats up?" /></Grid>
-                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid>
-                    <Grid className={classes.listItem} item ><ConversationItem title="Lucas Longarini" detail="Whats up?" /></Grid> */}
                 </Grid>
             </Grid>
         </Grid>
