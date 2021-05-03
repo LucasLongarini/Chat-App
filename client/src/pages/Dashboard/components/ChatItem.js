@@ -64,7 +64,6 @@ export default function ChatItem({ message, users }) {
                         <Grid item>
                             <Typography className={`${classes.chatText} ${didSend ? classes.sent : classes.received}`} variant="h5">
                                 {message.content}
-                                {/* ASDOIASJD ADOJAPODIJA DPUHPOSDJFOSDJIF SOFSPDHF PS SDF SFOSJFSODJ FSD  */}
                             </Typography>
                         </Grid>
                     </Grid>
