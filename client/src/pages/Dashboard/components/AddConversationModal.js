@@ -1,5 +1,5 @@
 import { useState, forwardRef, useRef } from 'react';
-import { Paper, Grid, Typography, Box, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Typography, Box, CircularProgress, List, ListItem } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import SearchInput from '../../../components/SearchInput';
 import ConversationItem from './ConversationItem';
@@ -26,6 +26,10 @@ const useStyles = makeStyles(theme => ({
     list: {
         paddingTop: 0,
         height: "100%",
+    },
+    loadingContainer: {
+        display: 'felx',
+        justifyContent: 'center'
     },
 }));
 
@@ -65,20 +69,23 @@ function AddConversationModal({ addConversationCallback }) {
                     <SearchInput autoFocus onChange={handleSearchChanged} placeholder="Search by username" />
                 </Grid>
 
-                <Grid container item className={classes.list} direction="column" spacing={2}>
-                    {isSearching &&
-                        <Grid item container justify="center">
-                            <CircularProgress />
-                        </Grid>
-                    }
+                <Grid item className={classes.list} >
+                    <List>
+                        {isSearching &&
+                            <ListItem className={classes.loadingContainer}>
+                                <CircularProgress />
+                            </ListItem>
+                        }
 
-                    {users?.map(user => {
-                        return (
-                            <Grid item key={user.id} className={classes.listItem} onClick={() => addConversationCallback(user.id)}>
-                                <ConversationItem badge={false} title={user.username} />
-                            </Grid>
-                        );
-                    })}
+                        {users?.map(user => {
+                            return (
+                                <ListItem item key={user.id} className={classes.listItem} onClick={() => addConversationCallback(user.id)}>
+                                    <ConversationItem badge={false} title={user.username} />
+                                </ListItem>
+                            );
+                        })}
+                    </List>
+
                 </Grid>
             </Grid>
         </Paper>

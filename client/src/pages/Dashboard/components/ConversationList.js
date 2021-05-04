@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Grid, Typography, IconButton, Menu, MenuItem, Button } from "@material-ui/core";
+import { Grid, Typography, IconButton, Menu, MenuItem, Button, List, ListItem } from "@material-ui/core";
 import ConversationItem from './ConversationItem';
 import { makeStyles } from "@material-ui/core/styles";
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
@@ -38,7 +38,10 @@ const useStyles = makeStyles(theme => ({
     list: {
         paddingTop: 10,
         marginBottom: 20,
-        paddingLeft: 16
+    },
+    listItem: {
+        marginTop: 8,
+        marginBottom: 8,
     },
     selectedListItem: {
         backgroundColor: '#5885C41C'
@@ -116,7 +119,7 @@ export default function ConversationList({ conversations, signoutCallback, addCo
             </Grid>
 
             <Grid className={classes.listContainer} item>
-                <Grid className={classes.list} container direction="column" spacing={5}>
+                <List className={classes.list} container>
                     {parsedConversations?.filter?.(conversation => {
                         if (searchValue) {
                             return conversation?.otherUser?.username?.toLowerCase().includes(searchValue.toLowerCase());
@@ -124,16 +127,16 @@ export default function ConversationList({ conversations, signoutCallback, addCo
                         return true;
                     }).map((conversation) => {
                         return (
-                            <Grid onClick={() => selectConversationCallback(conversation.id)} key={conversation.id} item >
+                            <ListItem className={classes.listItem} onClick={() => selectConversationCallback(conversation.id)} key={conversation.id} >
                                 <ConversationItem
                                     title={conversation.otherUser.username}
                                     detail={conversation.latestMessage?.content}
                                     selected={conversation?.id === selectedConversation?.id}
                                 />
-                            </Grid>
+                            </ListItem>
                         );
                     })}
-                </Grid>
+                </List>
             </Grid>
         </Grid>
 

@@ -5,7 +5,6 @@ import SearchIcon from '@material-ui/icons/Search';
 const useStyles = makeStyles(theme => ({
     inputContainer: {
         borderRadius: 5,
-        marginBottom: 20,
         backgroundColor: '#E9EEF9',
     },
     input: {
