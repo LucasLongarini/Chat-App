@@ -2,31 +2,31 @@ import { createMuiTheme } from "@material-ui/core";
 
 export const theme = createMuiTheme({
   typography: {
-    fontFamily: ["Open Sans"],
-    fontSize: 12,
+    fontFamily: "Open Sans",
+    fontSize: 14,
     h1: {
       fontSize: 26,
-      fontWeight: 600 //semi-bold
+      fontWeight: 600
     },
     h2: {
       fontSize: 26,
-      fontWeight: 400 //regular
+      fontWeight: 400
     },
     h3: {
       fontSize: 19,
-      fontWeight: 600 //semi-bold
+      fontWeight: 600
     },
     h4: {
       fontSize: 19,
-      fontWeight: 400 //regular,
+      fontWeight: 400
     },
     h5: {
       fontSize: 14,
       fontWeight: 600,
     },
     h6: {
-      fontSize: 14,
-      fontWeight: 400,
+      fontSize: 12,
+      fontWeight: 600,
     },
 
     button: {
@@ -36,5 +36,8 @@ export const theme = createMuiTheme({
   },
   palette: {
     primary: { main: "#3A8DFF" },
+    lightText: '#BFC9DB',
+    online: '#32CD32',
+    offline: 'lightGray'
   }
 });

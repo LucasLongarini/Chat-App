@@ -12,6 +12,20 @@ module.exports = class ConversationRepository extends BaseRepository {
         this.userRepository = userRepository;
     }
 
+    async create(model) {
+
+        try {
+            let schemaToSave = this.toSchema(model);
+            let savedSchema = await schemaToSave.save();
+            savedSchema = await savedSchema.populate('users').execPopulate();
+            return this.fromSchema(savedSchema);
+        }
+        catch (err) {
+            return Promise.reject(err);
+        }
+
+    }
+
     async getAllConversations(userId) {
         try {
             const results = await ConversationSchema.find(
