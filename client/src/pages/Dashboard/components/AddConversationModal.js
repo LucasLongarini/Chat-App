@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
         height: "100%",
     },
     loadingContainer: {
-        display: 'felx',
+        display: 'flex',
         justifyContent: 'center'
     },
 }));
