@@ -41,7 +41,7 @@ export default function ConversationItem({ title, detail, onlineStatus, badge=tr
                     }}
                     badgeContent={badge && <OnlineCircle onlineStatus={onlineStatus} /> || <div/>}
                 >
-                    <Avatar className={classes.avatar} alt="Remy Sharp" />
+                    <Avatar className={classes.avatar} alt={title}/>
                 </Badge>
             </Grid>
 

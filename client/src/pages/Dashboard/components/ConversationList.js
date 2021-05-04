@@ -48,6 +48,7 @@ const useStyles = makeStyles(theme => ({
 export default function ConversationList({ conversations, signoutCallback, addConversationCallback, selectedConversation, selectConversationCallback }) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
+    const [searchValue, setSearchValue] = useState();
     const auth = useAuth();
     const parsedConversations = useMemo(() => {
         return conversations?.map(conversation => {
@@ -70,6 +71,10 @@ export default function ConversationList({ conversations, signoutCallback, addCo
     const handleSignout = () => {
         handleCloseMenu();
         signoutCallback();
+    }
+
+    const handleSearchChanged = (event) => {
+        setSearchValue(event.target.value);
     }
 
     return (
@@ -107,14 +112,19 @@ export default function ConversationList({ conversations, signoutCallback, addCo
             </Grid>
 
             <Grid item>
-                <SearchInput />
+                <SearchInput onChange={handleSearchChanged} />
             </Grid>
 
             <Grid className={classes.listContainer} item>
                 <Grid className={classes.list} container direction="column" spacing={5}>
-                    {parsedConversations?.map((conversation, i) => {
+                    {parsedConversations?.filter?.(conversation => {
+                        if (searchValue) {
+                            return conversation?.otherUser?.username?.toLowerCase().includes(searchValue.toLowerCase());
+                        }
+                        return true;
+                    }).map((conversation) => {
                         return (
-                            <Grid onClick={()=>selectConversationCallback(i)} key={conversation.id} item >
+                            <Grid onClick={() => selectConversationCallback(conversation.id)} key={conversation.id} item >
                                 <ConversationItem
                                     title={conversation.otherUser.username}
                                     detail={conversation.latestMessage?.content}

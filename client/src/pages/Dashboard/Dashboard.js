@@ -82,8 +82,8 @@ function Dashboard({ width }) {
 
   }
 
-  function handleConversationSelected(index) {
-    const conversation = conversations[index];
+  function handleConversationSelected(id) {
+    const conversation = conversations.find(i => i.id === id);
     setSelectedConversation(conversation);
   }
 

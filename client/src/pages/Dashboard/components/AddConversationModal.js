@@ -1,5 +1,5 @@
 import { useState, forwardRef, useRef } from 'react';
-import { Paper, Grid, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Typography, Box, CircularProgress } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import SearchInput from '../../../components/SearchInput';
 import ConversationItem from './ConversationItem';
@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
         left: "50%",
         transform: "translate(-50%, 0)",
         top: "10%",
-        padding: theme.spacing(2.5),
+        padding: theme.spacing(3),
         width: 500,
         maxWidth: "90%",
         maxHeight: "80%",
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     list: {
         paddingTop: 0,
         height: "100%",
-    }
+    },
 }));
 
 function AddConversationModal({ addConversationCallback }) {
@@ -50,18 +50,8 @@ function AddConversationModal({ addConversationCallback }) {
     }
 
     function handleSearchChanged(event) {
-        if (!event.target.value) {
-            searchRef('');
-            setUsers([]);
-            setIsSearching(false);
-            return
-        }
         setIsSearching(true);
         searchRef(event.target.value)
-    }
-
-    function handleStartButton(userId) {
-        addConversationCallback(userId);
     }
 
     return (
@@ -84,14 +74,8 @@ function AddConversationModal({ addConversationCallback }) {
 
                     {users?.map(user => {
                         return (
-                            <Grid item container key={user.id} direction="row" justify="space-between">
-                                <Grid item>
-                                    <ConversationItem badge={false} title={user.username} />
-                                </Grid>
-
-                                <Grid item>
-                                    <Button onClick={() => handleStartButton(user.id)} variant="outlined" color="primary">Start</Button>
-                                </Grid>
+                            <Grid item key={user.id} className={classes.listItem} onClick={() => addConversationCallback(user.id)}>
+                                <ConversationItem badge={false} title={user.username} />
                             </Grid>
                         );
                     })}

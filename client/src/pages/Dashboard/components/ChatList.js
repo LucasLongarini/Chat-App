@@ -15,12 +15,16 @@ import { useAuth } from '../../../hooks/useAuth';
 const useStyles = makeStyles(theme => ({
     root: {
         height: '100%',
-        padding: theme.spacing(2),
+        paddingLeft: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
     },
     header: {
         background: 'white',
         boxShadow: '0 2px 20px 0 rgba(88, 133, 196, .1)',
         padding: "24px 30px"
+    },
+    backButton: {
+        marginRight: 10
     },
     onlineContainer: {
         marginLeft: 20
@@ -92,7 +96,7 @@ export default function ChatList({ onlineStatus, backButtonCallback, selectedCon
                     <Grid container spacing={0} alignItems="center">
                         <Hidden mdUp>
                             <Grid item >
-                                <IconButton onClick={backButtonCallback}>
+                                <IconButton className={classes.backButton} onClick={backButtonCallback}>
                                     <ArrowBackIosIcon />
                                 </IconButton>
                             </Grid>

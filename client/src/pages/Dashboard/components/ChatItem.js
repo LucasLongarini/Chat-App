@@ -58,7 +58,7 @@ export default function ChatItem({ message, users }) {
                     <Grid container wrap="nowrap" direction="column">
                         <Grid item>
                             <Typography className={classes.dateText} variant="h6" style={{ textAlign: didSend ? "end" : "start" }}>
-                                {`${!didSend ? user.username : ''} ${time[0]}:${time[1]}`}
+                                {`${!didSend ? user?.username : ''} ${time[0]}:${time[1]}`}
                             </Typography>
                         </Grid>
                         <Grid item>
