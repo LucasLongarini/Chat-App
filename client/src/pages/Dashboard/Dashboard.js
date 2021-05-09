@@ -5,6 +5,7 @@ import { Grid, Box, Modal, IconButton, Snackbar, Typography, Button } from '@mat
 import { makeStyles } from "@material-ui/core/styles";
 import withWidth, { isWidthDown } from '@material-ui/core/withWidth';
 import CloseIcon from "@material-ui/icons/Close";
+import io from 'socket.io-client';
 
 import ConversationList from './components/ConversationList';
 import ChatList from './components/ChatList';
@@ -36,6 +37,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const socket = io();
+
 function Dashboard({ width }) {
   const history = useHistory();
   const auth = useAuth();
@@ -46,8 +49,15 @@ function Dashboard({ width }) {
   const [errorOpen, setErrorOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('Error');
   const [selectedConversation, setSelectedConversation] = useState();
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   useEffect(() => {
+    if (selectedConversation?.id)
+      socket.emit("join", selectedConversation.id)
+  }, [selectedConversation]);
+
+  useEffect(() => {
+
     async function getConversations() {
       try {
         const conversations = await ConversationService.getConversations();
@@ -56,6 +66,11 @@ function Dashboard({ width }) {
       catch { }
     }
     getConversations();
+
+    socket.on('onlineUsers', onlineUsers => {
+      console.log(onlineUsers);
+      setOnlineUsers(onlineUsers);
+    });
   }, []);
 
   useEffect(() => {
@@ -83,7 +98,7 @@ function Dashboard({ width }) {
   }
 
   function handleConversationSelected(id) {
-    const conversation = conversations.find(i => i.id === id);
+    const conversation = conversations?.find(i => i.id === id);
     setSelectedConversation(conversation);
   }
 
@@ -100,6 +115,7 @@ function Dashboard({ width }) {
             <Box className={classes.ConversationContainer}>
               <ConversationList
                 addConversationCallback={handleOpenModal}
+                onlineUsers={onlineUsers}
                 conversations={conversations}
                 signoutCallback={handleSignout}
                 selectedConversation={selectedConversation}
@@ -114,6 +130,8 @@ function Dashboard({ width }) {
           selectedConversation ?
             <Grid className={classes.gridItem} item xs>
               <ChatList
+                socket={socket}
+                onlineUsers={onlineUsers}
                 selectedConversation={selectedConversation}
                 backButtonCallback={() => handleConversationSelected(undefined)}
               />
