@@ -15,8 +15,7 @@ import { useAuth } from '../../../hooks/useAuth';
 const useStyles = makeStyles(theme => ({
     root: {
         height: '100%',
-        paddingLeft: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
+        padding: theme.spacing(2),
     },
     header: {
         background: 'white',
@@ -77,11 +76,18 @@ export default function ChatList({ socket, onlineUsers, backButtonCallback, sele
     const auth = useAuth();
 
     useEffect(() => {
+        socket?.on("newMessage", ({ message }) => {
+            if (message)
+                setMessages(oldMessages => [...oldMessages, message]);
+        });
+    }, [socket]);
+
+    useEffect(() => {
+        setMessages([]);
         async function getMessages() {
             if (selectedConversation?.id) {
                 const messages = await ConversationService.getMessages(selectedConversation.id);
                 setMessages(messages);
-                console.log(messages);
             }
         };
         getMessages();

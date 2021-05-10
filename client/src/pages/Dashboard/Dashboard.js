@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const socket = io();
+let socket;
 
 function Dashboard({ width }) {
   const history = useHistory();
@@ -66,9 +66,9 @@ function Dashboard({ width }) {
       catch { }
     }
     getConversations();
+    socket = io();
 
     socket.on('onlineUsers', onlineUsers => {
-      console.log(onlineUsers);
       setOnlineUsers(onlineUsers);
     });
   }, []);

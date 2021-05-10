@@ -50,12 +50,11 @@ const SocketService = (io, dependencies) => {
             try {
                 const roomId = socket.rooms?.values()?.next()?.value;
                 if (roomId && message !== '') {
-                    const success = await ConversationRepository.addMessage(roomId, new Message(undefined, userId, message))
-                    if (success) {
+                    const newMessage = await ConversationRepository.addMessage(roomId, new Message(undefined, userId, message));
+                    if (newMessage) {
                         io.to(roomId).emit('newMessage', {
-                            message: {
-
-                            });
+                            message: newMessage
+                        });
                     }
                 }
             }

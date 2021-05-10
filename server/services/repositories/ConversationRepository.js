@@ -46,7 +46,7 @@ module.exports = class ConversationRepository extends BaseRepository {
     async findById(id) {
         try {
             const schemaObject = await this.schema.findById(id).populate('users');
-            
+
             if (schemaObject === null) return undefined;
 
             return this.fromSchema(schemaObject)
@@ -74,11 +74,14 @@ module.exports = class ConversationRepository extends BaseRepository {
         try {
             const messageSchema = this.messageRepository.toSchema(message);
 
-            const success = await ConversationSchema.updateOne(
+            const result = await ConversationSchema.findByIdAndUpdate(
                 { _id: conversationId },
-                { $push: { messages: messageSchema } }
-            );
-            return success;
+                { $push: { messages: messageSchema } },
+                { new: true, useFindAndModify: false },
+            ).slice("messages", -1);
+            const newMessage = result?.messages[0];
+            if (newMessage) return this.messageRepository.fromSchema(newMessage);
+            return undefined;
         }
         catch (err) {
             return Promise.reject(err);
