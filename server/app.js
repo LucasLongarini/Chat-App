@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const express = require("express");
 const { join } = require("path");
+const http = require('http');
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const dependencies = require('./config/dependencies');
@@ -11,6 +12,9 @@ const pingRouter = require("./routes/ping");
 const { json, urlencoded } = express;
 
 const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+require('./services/SocketService')(io, dependencies);
 
 app.use(logger("dev"));
 app.use(json());
@@ -40,4 +44,4 @@ app.use(function (err, req, res, next) {
   res.json({ error: err });
 });
 
-module.exports = app;
+module.exports = { app, server };

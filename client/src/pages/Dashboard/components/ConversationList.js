@@ -48,20 +48,30 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function ConversationList({ conversations, signoutCallback, addConversationCallback, selectedConversation, selectConversationCallback }) {
+export default function ConversationList({ conversations, onlineUsers, signoutCallback, addConversationCallback, selectedConversation, selectConversationCallback }) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const [searchValue, setSearchValue] = useState();
     const auth = useAuth();
     const parsedConversations = useMemo(() => {
+
+        // put onlineUsers array into a map for faster lookup
+        const onlineUsersMap = {}
+        onlineUsers?.forEach(userId => {
+            onlineUsersMap[userId] = true
+        });
+
         return conversations?.map(conversation => {
             const otherUser = conversation.users?.filter(user => user.id !== auth.user.id)[0];
-            conversation.otherUser = otherUser;
+            if (otherUser) {
+                otherUser.isOnline = onlineUsersMap[otherUser?.id];
+                conversation.otherUser = otherUser;
+            }
             if (conversation.latestMessage)
                 conversation.latestMessage.isRecieved = conversation.latestMessage.fromUserId === auth?.user?.userId;
             return conversation;
         });
-    }, [conversations, auth]);
+    }, [conversations, auth, onlineUsers]);
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -119,7 +129,7 @@ export default function ConversationList({ conversations, signoutCallback, addCo
             </Grid>
 
             <Grid className={classes.listContainer} item>
-                <List className={classes.list} container>
+                <List className={classes.list}>
                     {parsedConversations?.filter?.(conversation => {
                         if (searchValue) {
                             return conversation?.otherUser?.username?.toLowerCase().includes(searchValue.toLowerCase());
@@ -129,6 +139,7 @@ export default function ConversationList({ conversations, signoutCallback, addCo
                         return (
                             <ListItem className={classes.listItem} onClick={() => selectConversationCallback(conversation.id)} key={conversation.id} >
                                 <ConversationItem
+                                    onlineStatus={conversation.otherUser.isOnline ? OnlineStatus.ONLINE : OnlineStatus.OFFLINE}
                                     title={conversation.otherUser.username}
                                     detail={conversation.latestMessage?.content}
                                     selected={conversation?.id === selectedConversation?.id}

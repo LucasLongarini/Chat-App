@@ -15,8 +15,7 @@ import { useAuth } from '../../../hooks/useAuth';
 const useStyles = makeStyles(theme => ({
     root: {
         height: '100%',
-        paddingLeft: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
+        padding: theme.spacing(2),
     },
     header: {
         background: 'white',
@@ -70,12 +69,21 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function ChatList({ onlineStatus, backButtonCallback, selectedConversation }) {
+export default function ChatList({ socket, onlineUsers, backButtonCallback, selectedConversation }) {
     const classes = useStyles();
     const [messages, setMessages] = useState();
+    const [inputText, setInputText] = useState();
     const auth = useAuth();
 
     useEffect(() => {
+        socket?.on("newMessage", ({ message }) => {
+            if (message)
+                setMessages(oldMessages => [...oldMessages, message]);
+        });
+    }, [socket]);
+
+    useEffect(() => {
+        setMessages([]);
         async function getMessages() {
             if (selectedConversation?.id) {
                 const messages = await ConversationService.getMessages(selectedConversation.id);
@@ -86,8 +94,26 @@ export default function ChatList({ onlineStatus, backButtonCallback, selectedCon
     }, [selectedConversation]);
 
     const otherUser = useMemo(() => {
-        return selectedConversation?.users?.filter(user => user.id !== auth?.user?.id)[0];
-    }, [selectedConversation, auth]);
+        const user = selectedConversation?.users?.filter(user => user.id !== auth?.user?.id)[0];
+        user.isOnline = onlineUsers.includes(user.id);
+        return user;
+    }, [selectedConversation, auth, onlineUsers]);
+
+    function handleKeyPress(event) {
+
+        if (event.key === 'Enter') {
+            event.preventDefault();
+
+            if (inputText.length !== 0) {
+                socket?.emit("message", inputText);
+                setInputText('');
+            }
+        }
+    }
+
+    function handleInputChange(event) {
+        setInputText(event.target.value);
+    }
 
     return (
         <Grid className={classes.root} container direction="column" justify="space-between" wrap="nowrap">
@@ -110,11 +136,11 @@ export default function ChatList({ onlineStatus, backButtonCallback, selectedCon
                         <Grid item className={classes.onlineContainer}>
                             <Grid container spacing={1} alignItems="center" wrap="nowrap">
                                 <Grid item>
-                                    <OnlineCircle onlineStatus={onlineStatus} />
+                                    <OnlineCircle onlineStatus={otherUser?.isOnline ? OnlineStatus.ONLINE : OnlineStatus.OFFLINE} />
                                 </Grid>
                                 <Grid item>
                                     <Typography className={classes.onlineText} variant="h6">
-                                        {onlineStatus === OnlineStatus.ONLINE ? "Online" : "Offline"}
+                                        {otherUser?.isOnline === OnlineStatus.ONLINE ? "Online" : "Offline"}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -143,10 +169,13 @@ export default function ChatList({ onlineStatus, backButtonCallback, selectedCon
                     <Input
                         disableUnderline
                         multiline
+                        onChange={handleInputChange}
+                        onKeyPressCapture={handleKeyPress}
                         id="Chat-input"
                         placeholder="Type something..."
                         variant="filled"
                         fullWidth
+                        value={inputText}
                         inputProps={{ className: classes.input }}
                         endAdornment={
                             <Grid container direction="row" wrap="nowrap" style={{ width: 'auto' }}>

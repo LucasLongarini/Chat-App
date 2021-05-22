@@ -1,5 +1,5 @@
 import { useState, forwardRef, useRef } from 'react';
-import { Paper, Grid, Typography, Box, CircularProgress, List, ListItem } from '@material-ui/core';
+import { Paper, Grid, Typography, CircularProgress, List, ListItem } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import SearchInput from '../../../components/SearchInput';
 import ConversationItem from './ConversationItem';
@@ -44,8 +44,10 @@ function AddConversationModal({ addConversationCallback }) {
         if (!value) {
             setUsers([]);
         }
+
         else {
             let users = await ConversationService.searchUsers(value);
+            console.log(users);
             // filter out yourself
             users = users?.filter(user => user.id !== auth.user.id);
             setUsers(users);
